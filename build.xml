@@ -101,6 +101,18 @@
             <isset property="platform_darwin_x86_64" />
         </condition>
         
+        <!-- detect darwin_aarch64 -->
+
+        <condition property="platform_darwin_aarch64">
+            <os family="mac" arch="aarch64" />
+        </condition>
+        <condition property="platform" value="darwin_aarch64">
+            <isset property="platform_darwin_aarch64" />
+        </condition>
+        <condition property="platform_darwin">
+            <isset property="platform_darwin_aarch64" />
+        </condition>
+
         <!-- detect linux_x86 -->
         
         <condition property="platform_linux_x86">
@@ -268,6 +280,9 @@
             <param name="arch" value="darwin_x86_64" />
         </antcall>
         <antcall target="_check_lib">
+            <param name="arch" value="darwin_aarch64" />
+        </antcall>
+        <antcall target="_check_lib">
             <param name="arch" value="linux_x86" />
         </antcall>
         <antcall target="_check_lib">
@@ -358,7 +373,7 @@
 
     <!-- Generate header and C stub file plus normalized version -->
     <target name="_header">
-        <uptodate property="header_uptodate" targetfile="${build_dir}/lib/MD5.h">
+        <uptodate property="header_uptodate" targetfile="/lib/arch/darwin_aarch64/MD5.h">
             <srcfiles file="src/main/c/MD5.c" />
             <srcfiles file="src/main/java/com/twmacinta/util/MD5.java" />
             <srcfiles file="target/classes/com/twmacinta/util/MD5.class" />
@@ -368,7 +383,7 @@
     <target name="_header_if_needed" unless="header_uptodate">
         <mkdir dir="${build_dir}/lib" />
         <javah class="com.twmacinta.util.MD5"
-               outputFile="${build_dir}/lib/MD5.h"
+               outputFile="/lib/arch/darwin_aarch64/MD5.h"
                classpath="target/classes"
                force="true" />
         <antcall target="_normalize_header">
@@ -452,12 +467,10 @@
         <exec executable="gcc" dir="${build_dir}/lib" failonerror="true">
             <arg value="-O3" />
             <arg value="-bundle" />
-            <arg value="-I" />
-            <arg value="/System/Library/Frameworks/JavaVM.framework/Headers" />
+            <arg value="-I${jdk_home}/include" />
+            <arg value="-I${jdk_home}/include/darwin" />
             <arg value="-o" />
             <arg value="MD5.jnilib" />
-            <arg value="-framework" />
-            <arg value="JavaVM" />
             <arg value="MD5.c" />
         </exec>
         <antcall target="_update_lib">
