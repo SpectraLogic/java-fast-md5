@@ -792,6 +792,14 @@ public class MD5 {
                 arch_libfile_suffix = ".jnilib";
             }
             
+            // fill in settings for Mac OS X on native silicon
+
+            else if (os_name.startsWith("mac os x") &&
+                     os_arch.equals("aarch64")) {
+                arch_lib_path = new File(new File(new File("lib"), "arch"), "darwin_aarch64");
+                arch_libfile_suffix = ".jnilib";
+            }
+
             // fill in settings for FreeBSD on x86
             
             else if (os_name.equals("freebsd") &&
